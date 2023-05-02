@@ -33,7 +33,10 @@ class _MyHomePageState extends State<MyHomePage> {
 
   void _changeText(String s) {
     setState(() {
-      if (s == '=') {
+      if (s == 'C') {
+        _calcText = '';
+        _solutionText = '';
+      } else if (s == '=') {
         _solutionText = _calcText
             .replaceAll('x', '*')
             .replaceAll('÷', '/')
@@ -45,12 +48,25 @@ class _MyHomePageState extends State<MyHomePage> {
     });
   }
 
-  static const List<List<String>> lon = [
-    ['C', '^', '÷', 'x'],
-    ['7', '8', '9', '-'],
-    ['4', '5', '6', '+'],
-    ['1', '2', '3', '='],
-    ['0', '0', '.', '=']
+  static const List<String> lon = [
+    'C',
+    '^',
+    '÷',
+    'x',
+    '7',
+    '8',
+    '9',
+    '-',
+    '4',
+    '5',
+    '6',
+    '+',
+    '1',
+    '2',
+    '3',
+    '=',
+    '0',
+    '.',
   ];
 
   Widget buttonBuilder(
@@ -117,16 +133,20 @@ class _MyHomePageState extends State<MyHomePage> {
                 ),
               ),
             ),
-            for (List<String> L in lon)
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  for (String s in L)
-                    buttonBuilder(
-                        s, Colors.grey, Colors.white, height / 5, width / 4),
-                ],
-              ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                buttonBuilder(
+                    lon[0], Colors.red, Colors.white, height / 5, width / 4),
+                buttonBuilder(
+                    lon[1], Colors.blue, Colors.white, height / 5, width / 4),
+                buttonBuilder(
+                    lon[2], Colors.blue, Colors.white, height / 5, width / 4),
+                buttonBuilder(
+                    lon[3], Colors.blue, Colors.white, height / 5, width / 4),
+              ],
+            ),
             /*Row(
               mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.center,
