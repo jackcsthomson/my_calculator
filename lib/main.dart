@@ -27,16 +27,19 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  /*void _incrementCounter() {
+  String _calcText = '';
+
+  void _changeText(String s) {
     setState(() {
-      _counter++;
+      _calcText = _calcText + s;
     });
-  }*/
+  }
 
   static const List<List<String>> lon = [
-    ['7', '8', '9'],
-    ['4', '5', '6'],
-    ['1', '2', '3']
+    ['7', '8', '9', '÷'],
+    ['4', '5', '6', 'x'],
+    ['1', '2', '3', '-'],
+    ['0', '.', '=', '+']
   ];
 
   Widget buttonBuilder(
@@ -48,7 +51,7 @@ class _MyHomePageState extends State<MyHomePage> {
       child: Center(
         child: TextButton(
           onPressed: () {
-            print(title);
+            _changeText(title);
           },
           child: SizedBox(
             height: h,
@@ -56,7 +59,7 @@ class _MyHomePageState extends State<MyHomePage> {
             child: Center(
               child: Text(
                 title,
-                style: TextStyle(color: textColor),
+                style: TextStyle(color: textColor, fontSize: 48),
               ),
             ),
           ),
@@ -68,7 +71,8 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context) {
     double width = MediaQuery.of(context).size.width;
-    double height = MediaQuery.of(context).size.height;
+    double pheight = MediaQuery.of(context).size.height;
+    double height = pheight - (pheight / 8);
 
     return Scaffold(
       body: Center(
@@ -76,6 +80,21 @@ class _MyHomePageState extends State<MyHomePage> {
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
+            Container(
+              width: width,
+              height: pheight / 8,
+              color: Colors.white,
+              child: Align(
+                alignment: Alignment.centerLeft,
+                child: Padding(
+                  padding: const EdgeInsets.only(left: 10.0),
+                  child: Text(
+                    _calcText,
+                    style: const TextStyle(color: Colors.black, fontSize: 48),
+                  ),
+                ),
+              ),
+            ),
             for (List<String> L in lon)
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -83,19 +102,19 @@ class _MyHomePageState extends State<MyHomePage> {
                 children: [
                   for (String s in L)
                     buttonBuilder(
-                        s, Colors.grey, Colors.white, height / 4, width / 3)
+                        s, Colors.grey, Colors.white, height / 4, width / 4),
                 ],
               ),
-            Row(
+            /*Row(
               mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 buttonBuilder(
-                    '0', Colors.grey, Colors.white, height / 4, width * 2 / 3),
+                    '0', Colors.grey, Colors.white, height / 4, width / 2),
                 buttonBuilder(
-                    '=', Colors.grey, Colors.white, height / 4, width / 3)
+                    '.', Colors.grey, Colors.white, height / 4, width / 4)
               ],
-            ),
+            ),*/
           ],
         ),
       ),
