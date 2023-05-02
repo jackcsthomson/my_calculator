@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:function_tree/function_tree.dart';
 
 void main() {
   runApp(const MyApp());
@@ -28,18 +29,28 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   String _calcText = '';
+  String _solutionText = '';
 
   void _changeText(String s) {
     setState(() {
-      _calcText = _calcText + s;
+      if (s == '=') {
+        _solutionText = _calcText
+            .replaceAll('x', '*')
+            .replaceAll('÷', '/')
+            .interpret()
+            .toString();
+      } else {
+        _calcText = _calcText + s;
+      }
     });
   }
 
   static const List<List<String>> lon = [
-    ['7', '8', '9', '÷'],
-    ['4', '5', '6', 'x'],
-    ['1', '2', '3', '-'],
-    ['0', '.', '=', '+']
+    ['C', '^', '÷', 'x'],
+    ['7', '8', '9', '-'],
+    ['4', '5', '6', '+'],
+    ['1', '2', '3', '='],
+    ['0', '0', '.', '=']
   ];
 
   Widget buttonBuilder(
@@ -72,7 +83,7 @@ class _MyHomePageState extends State<MyHomePage> {
   Widget build(BuildContext context) {
     double width = MediaQuery.of(context).size.width;
     double pheight = MediaQuery.of(context).size.height;
-    double height = pheight - (pheight / 8);
+    double height = pheight - (pheight / 7);
 
     return Scaffold(
       body: Center(
@@ -82,15 +93,26 @@ class _MyHomePageState extends State<MyHomePage> {
           children: [
             Container(
               width: width,
-              height: pheight / 8,
+              height: pheight / 7,
               color: Colors.white,
               child: Align(
                 alignment: Alignment.centerLeft,
                 child: Padding(
                   padding: const EdgeInsets.only(left: 10.0),
-                  child: Text(
-                    _calcText,
-                    style: const TextStyle(color: Colors.black, fontSize: 48),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: [
+                      Text(
+                        _calcText,
+                        style:
+                            const TextStyle(color: Colors.black, fontSize: 48),
+                      ),
+                      Text(
+                        (_solutionText == '') ? '' : '= $_solutionText',
+                        style:
+                            const TextStyle(color: Colors.black, fontSize: 54),
+                      ),
+                    ],
                   ),
                 ),
               ),
@@ -102,7 +124,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 children: [
                   for (String s in L)
                     buttonBuilder(
-                        s, Colors.grey, Colors.white, height / 4, width / 4),
+                        s, Colors.grey, Colors.white, height / 5, width / 4),
                 ],
               ),
             /*Row(
