@@ -153,7 +153,7 @@ class _MyHomePageState extends State<MyHomePage> {
   Widget build(BuildContext context) {
     double width = MediaQuery.of(context).size.width;
     double pheight = MediaQuery.of(context).size.height;
-    double height = pheight - (pheight / 7);
+    double height = pheight - (pheight / 6);
 
     return Scaffold(
       body: Center(
@@ -163,12 +163,14 @@ class _MyHomePageState extends State<MyHomePage> {
           children: [
             Container(
               width: width,
-              height: pheight / 7,
+              height: pheight / 6,
               color: Colors.white,
               child: Align(
                 alignment: Alignment.centerLeft,
                 child: Padding(
-                  padding: const EdgeInsets.only(left: 10.0),
+                  padding: const EdgeInsets.only(
+                    left: 10.0,
+                  ),
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.start,
                     crossAxisAlignment: CrossAxisAlignment.start,
