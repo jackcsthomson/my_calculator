@@ -30,26 +30,75 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   String _calcText = '';
   String _solutionText = '';
+  List<String> _prevCalcText = [''];
+  String _prevSolutionText = '';
+  int prevHits = 1;
 
   void _changeText(String s) {
-    setState(() {
-      if (s == 'C') {
-        _calcText = '';
-        _solutionText = '';
-      } else if (s == '=') {
-        _solutionText = _calcText
-            .replaceAll('x', '*')
-            .replaceAll('÷', '/')
-            .interpret()
-            .toString();
-      } else {
-        _calcText = _calcText + s;
-      }
-    });
+    setState(
+      () {
+        s = s.replaceAll('x', '*').replaceAll('÷', '/');
+        if (s == 'Del') {
+          _calcText = _calcText.substring(0, _calcText.length - 1);
+        } else if (s == 'AC') {
+          _calcText = '';
+          _solutionText = '';
+        } else if (s == '=') {
+          try {
+            _solutionText = '= ${_calcText.interpret().toString()}';
+            _prevSolutionText = _solutionText.substring(2);
+            _prevCalcText = _prevCalcText + [_calcText];
+          } catch (e) {
+            _solutionText = 'Bad expression. Please check your input';
+          }
+        } else if ((_solutionText != '') &&
+            (_calcText == _prevCalcText[_prevCalcText.length - 1])) {
+          _calcText = '';
+          _solutionText = '';
+          if (s == 'Prev') {
+            if (_prevCalcText[_prevCalcText.length - 1] != '') {
+              _calcText = _prevCalcText[_prevCalcText.length - 1];
+              _solutionText = '';
+            }
+          } else if (s == 'Ans') {
+            _calcText = _calcText + _prevSolutionText;
+          } else if (s == '^' || s == '-' || s == '+' || s == '/' || s == '*') {
+            _calcText = _prevSolutionText + s;
+            if (_calcText.length > 13) {
+              _calcText = s;
+            }
+          } else {
+            _calcText = _calcText + s;
+          }
+        } else if (s == 'Prev') {
+          if (_prevCalcText[_prevCalcText.length - 1] != '') {
+            _calcText = _prevCalcText[_prevCalcText.length - (1 * prevHits)];
+            _solutionText = '';
+          }
+        } else if (s == 'Ans') {
+          String tempCalcText = _calcText + _prevSolutionText;
+          if (tempCalcText.length < 13) {
+            _calcText = tempCalcText;
+          } else {
+            _solutionText = 'Too long';
+          }
+        } else {
+          if (_calcText.length < 13) {
+            _calcText = _calcText + s;
+          }
+        }
+
+        if (s == 'Prev') {
+          prevHits++;
+        } else {
+          prevHits = 1;
+        }
+      },
+    );
   }
 
   static const List<String> lon = [
-    'C',
+    'AC',
     '^',
     '÷',
     'x',
@@ -67,6 +116,11 @@ class _MyHomePageState extends State<MyHomePage> {
     '=',
     '0',
     '.',
+    'Prev',
+    'Ans',
+    'Del',
+    '(',
+    ')'
   ];
 
   Widget buttonBuilder(
@@ -86,7 +140,7 @@ class _MyHomePageState extends State<MyHomePage> {
             child: Center(
               child: Text(
                 title,
-                style: TextStyle(color: textColor, fontSize: 48),
+                style: TextStyle(color: textColor, fontSize: 42),
               ),
             ),
           ),
@@ -117,16 +171,25 @@ class _MyHomePageState extends State<MyHomePage> {
                   padding: const EdgeInsets.only(left: 10.0),
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
                         _calcText,
-                        style:
-                            const TextStyle(color: Colors.black, fontSize: 48),
+                        style: TextStyle(
+                            color: (_solutionText == '')
+                                ? Colors.black
+                                : Colors.grey,
+                            fontSize: 48),
+                        maxLines: 1,
                       ),
                       Text(
-                        (_solutionText == '') ? '' : '= $_solutionText',
-                        style:
-                            const TextStyle(color: Colors.black, fontSize: 54),
+                        (_solutionText == '') ? '' : _solutionText,
+                        style: TextStyle(
+                            color: (_solutionText.contains('='))
+                                ? Colors.black
+                                : Colors.red,
+                            fontSize: 48),
+                        maxLines: 1,
                       ),
                     ],
                   ),
@@ -134,29 +197,103 @@ class _MyHomePageState extends State<MyHomePage> {
               ),
             ),
             Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                buttonBuilder(
-                    lon[0], Colors.red, Colors.white, height / 5, width / 4),
-                buttonBuilder(
-                    lon[1], Colors.blue, Colors.white, height / 5, width / 4),
-                buttonBuilder(
-                    lon[2], Colors.blue, Colors.white, height / 5, width / 4),
-                buttonBuilder(
-                    lon[3], Colors.blue, Colors.white, height / 5, width / 4),
+                Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        buttonBuilder(lon[0], Colors.red, Colors.white,
+                            height / 6, width / 4),
+                        buttonBuilder(lon[18], Colors.grey, Colors.white,
+                            height / 6, width / 4),
+                        buttonBuilder(lon[19], Colors.grey, Colors.white,
+                            height / 6, width / 4),
+                      ],
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        buttonBuilder(lon[1], Colors.blue, Colors.white,
+                            height / 6, width / 4),
+                        buttonBuilder(lon[2], Colors.blue, Colors.white,
+                            height / 6, width / 4),
+                        buttonBuilder(lon[3], Colors.blue, Colors.white,
+                            height / 6, width / 4),
+                      ],
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        buttonBuilder(lon[4], Colors.grey, Colors.white,
+                            height / 6, width / 4),
+                        buttonBuilder(lon[5], Colors.grey, Colors.white,
+                            height / 6, width / 4),
+                        buttonBuilder(lon[6], Colors.grey, Colors.white,
+                            height / 6, width / 4),
+                      ],
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        buttonBuilder(lon[8], Colors.grey, Colors.white,
+                            height / 6, width / 4),
+                        buttonBuilder(lon[9], Colors.grey, Colors.white,
+                            height / 6, width / 4),
+                        buttonBuilder(lon[10], Colors.grey, Colors.white,
+                            height / 6, width / 4),
+                      ],
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        buttonBuilder(lon[12], Colors.grey, Colors.white,
+                            height / 6, width / 4),
+                        buttonBuilder(lon[13], Colors.grey, Colors.white,
+                            height / 6, width / 4),
+                        buttonBuilder(lon[14], Colors.grey, Colors.white,
+                            height / 6, width / 4),
+                      ],
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        buttonBuilder(lon[16], Colors.grey, Colors.white,
+                            height / 6, width * 2 / 4),
+                        buttonBuilder(lon[17], Colors.grey, Colors.white,
+                            height / 6, width / 4),
+                      ],
+                    ),
+                  ],
+                ),
+                Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    buttonBuilder(lon[20], Colors.grey, Colors.white,
+                        height / 6, width / 4),
+                    buttonBuilder(lon[7], Colors.blue, Colors.white, height / 6,
+                        width / 4),
+                    buttonBuilder(lon[11], Colors.blue, Colors.white,
+                        height / 6, width / 4),
+                    buttonBuilder(lon[21], Colors.blue, Colors.white,
+                        height / 6, width / 4),
+                    buttonBuilder(lon[22], Colors.blue, Colors.white,
+                        height / 6, width / 4),
+                    buttonBuilder(lon[15], Colors.red, Colors.white, height / 6,
+                        width / 4),
+                  ],
+                ),
               ],
             ),
-            /*Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                buttonBuilder(
-                    '0', Colors.grey, Colors.white, height / 4, width / 2),
-                buttonBuilder(
-                    '.', Colors.grey, Colors.white, height / 4, width / 4)
-              ],
-            ),*/
           ],
         ),
       ),
